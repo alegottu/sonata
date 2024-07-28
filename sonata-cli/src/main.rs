@@ -52,34 +52,36 @@ fn main()
 
     loop
     {
-        let mut input = String::new();
-        io::stdin().read_line(&mut input)
-            .expect("Failed to read line from stdin");
-        // TODO: remove newlines from string
-
-        if input.is_empty()
+        let lines = io::stdin().lines();
+        for line in lines
         {
-            break;
+            let input = line.unwrap();
+
+            if input.is_empty()
+            {
+                continue;
+            }
+
+            let req = SynthesisRequest {
+                text: input,
+                // mode: Some(SynthesisMode::Realtime),
+                // TODO: req and args seem redundant
+                mode: None,
+                speaker_id: None,
+                length_scale: None,
+                noise_scale: None,
+                noise_w: None,
+                rate: None,
+                volume: None,
+                pitch: None,
+                appended_silence_ms: None,
+                chunk_size: None,
+                chunk_padding: None
+            };
+
+            // NOTE: for some reason doesn't work with small inputs
+            process_synthesis_request(&args, &synth, &default_synth_config, req)
+                .expect("Synthesis failed");
         }
-
-        let req = SynthesisRequest {
-            text: input,
-            // mode: Some(SynthesisMode::Realtime),
-            // TODO: req and args seem redundant
-            mode: None,
-            speaker_id: None,
-            length_scale: None,
-            noise_scale: None,
-            noise_w: None,
-            rate: None,
-            volume: None,
-            pitch: None,
-            appended_silence_ms: None,
-            chunk_size: None,
-            chunk_padding: None
-        };
-
-        process_synthesis_request(&args, &synth, &default_synth_config, req)
-            .expect("Synthesis failed");
     }
 }
